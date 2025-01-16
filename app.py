@@ -5,7 +5,7 @@ import time
 
 def speak_message(value, sender, receiver):
     # Nội dung câu cần đọc
-    message = f"Đã nhận tiền chuyển khoản {value} từ {sender} cho {receiver}"
+    message = f"Đã nhận tiền chuyển khoản {value} từ {sender} đến {receiver}"
 
     # Tạo giọng nói tiếng Việt
     tts = gTTS(text=message, lang='vi')
