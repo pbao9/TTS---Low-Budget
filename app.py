@@ -1,45 +1,67 @@
+import tkinter as tk
+from tkinter import messagebox
 from gtts import gTTS
 import os
 import pygame
 import time
 
 def speak_message(value, sender, receiver):
-    # Nội dung câu cần đọc
     message = f"Đã nhận tiền chuyển khoản {value} từ {sender} đến {receiver}"
-
-    # Tạo giọng nói tiếng Việt
     tts = gTTS(text=message, lang='vi')
-
-    # Đặt tên file tạm thời
     temp_audio_file = "temp_audio.mp3"
-
-    # Lưu giọng nói vào file tạm thời
     tts.save(temp_audio_file)
-
-    # Phát âm thanh trực tiếp từ file
     pygame.mixer.init()
     pygame.mixer.music.load(temp_audio_file)
     pygame.mixer.music.play()
-
-    # Đợi cho âm thanh kết thúc
     while pygame.mixer.music.get_busy():
-        pygame.time.Clock().tick(10)  # Thêm một chút thời gian chờ để phát âm thanh
-
-    # Dừng âm thanh và bộ trộn sau khi phát xong
+        pygame.time.Clock().tick(10)
     pygame.mixer.music.stop()
     pygame.mixer.quit()
-
-    # Đợi một khoảng thời gian ngắn để chắc chắn âm thanh đã kết thúc trước khi xóa file
-    time.sleep(1)  # Chờ 1 giây trước khi xóa
-
-    # Xóa file tạm sau khi phát xong
+    time.sleep(1)
     os.remove(temp_audio_file)
 
-if __name__ == "__main__":
-    # Nhập các tham số từ người dùng
-    value = input("Nhập số tiền: ")
-    sender = input("Nhập tên người gửi: ")
-    receiver = input("Nhập tên người nhận: ")
+def submit():
+    value = value_entry.get()
+    sender = sender_entry.get()
+    receiver = receiver_entry.get()
+    if not value or not sender or not receiver:
+        messagebox.showwarning("Thiếu thông tin", "Vui lòng nhập đầy đủ thông tin.")
+    else:
+        speak_message(value, sender, receiver)
 
-    # Gọi hàm đọc giọng nói
-    speak_message(value, sender, receiver)
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    x = (window.winfo_screenwidth() // 2) - (width // 2)
+    y = (window.winfo_screenheight() // 2) - (height // 2)
+    window.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+
+# Tạo cửa sổ chính
+root = tk.Tk()
+root.title("Chuyển khoản thông báo")
+
+# Nhãn và ô nhập cho số tiền
+tk.Label(root, text="Số tiền:").grid(row=0, column=0, padx=10, pady=10)
+value_entry = tk.Entry(root)
+value_entry.grid(row=0, column=1, padx=10, pady=10)
+
+# Nhãn và ô nhập cho người gửi
+tk.Label(root, text="Người gửi:").grid(row=1, column=0, padx=10, pady=10)
+sender_entry = tk.Entry(root)
+sender_entry.grid(row=1, column=1, padx=10, pady=10)
+
+# Nhãn và ô nhập cho người nhận
+tk.Label(root, text="Người nhận:").grid(row=2, column=0, padx=10, pady=10)
+receiver_entry = tk.Entry(root)
+receiver_entry.grid(row=2, column=1, padx=10, pady=10)
+
+# Nút gửi
+submit_button = tk.Button(root, text="Gửi", command=submit)
+submit_button.grid(row=3, column=0, columnspan=2, pady=20)
+
+# Căn giữa cửa sổ chính
+center_window(root)
+
+# Chạy giao diện
+root.mainloop()
